@@ -16,8 +16,8 @@ export default function InfoScreen() {
 					return (
 						<Card style={styles.card} key={index}>
 							<Card.Content>
-								<Title>{data.title}</Title>
-								<Paragraph>{data.desc}</Paragraph>
+								<Title style={styles.content}>{data.title}</Title>
+								<Paragraph style={styles.content}>{data.desc}</Paragraph>
 							</Card.Content>
 						</Card>
 					);
@@ -40,5 +40,9 @@ const styles = StyleSheet.create({
 	card: {
 		marginBottom: '3%',
 		marginTop: '2%',
+		backgroundColor: 'white',
+	},
+	content: {
+		color: 'black',
 	},
 });

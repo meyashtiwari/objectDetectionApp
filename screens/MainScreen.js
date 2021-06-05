@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Button, Appbar } from 'react-native-paper';
+import { Text, Button } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
+import ml from '@react-native-firebase/ml';
 
 export default function MainScreen() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [camera, setCamera] = useState(null);
+	const [labels, setLabels] = useState([]);
 	const type = Camera.Constants.Type.back;
 	const isFocused = useIsFocused();
 
@@ -20,6 +22,10 @@ export default function MainScreen() {
 	const takePicture = async () => {
 		if (camera) {
 			const data = await camera.takePictureAsync(null);
+			const label = await ml().cloudImageLabelerProcessImage(data.uri, {
+				confidenceThreshold: 0.8,
+			});
+			setLabels(label);
 		}
 	};
 
@@ -51,6 +57,14 @@ export default function MainScreen() {
 				>
 					Detect Object
 				</Button>
+			</View>
+			<View>
+				{/* {labels.map((item, i) => (
+					<View style={{ marginTop: 20, width: 300 }} key={i}>
+						<Text>Label: {item.text}</Text>
+						<Text>Confidence: {item.confidence}</Text>
+					</View>
+				))} */}
 			</View>
 		</View>
 	);

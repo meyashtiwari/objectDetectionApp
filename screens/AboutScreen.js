@@ -24,14 +24,13 @@ export default function AboutScreen() {
 						</List.Subheader>
 						{DeveloperList.map((data, index) => {
 							return (
-								<View key={index}>
-									<List.Item
-										title={data.title}
-										description={data.desc}
-										left={() => <List.Icon icon={data.icon} />}
-									/>
-									<Divider />
-								</View>
+								<List.Item
+									key={index}
+									style={styles.content}
+									title={data.title}
+									description={data.desc}
+									left={() => <List.Icon icon={data.icon} />}
+								/>
 							);
 						})}
 					</List.Section>
@@ -53,9 +52,11 @@ const styles = StyleSheet.create({
 	},
 	description: {
 		textAlign: 'center',
+		color: 'black',
 	},
 	subHeading: {
 		textAlign: 'center',
+		color: 'black',
 	},
 	topSection: {
 		flex: 1,
@@ -66,5 +67,8 @@ const styles = StyleSheet.create({
 	},
 	bottomSection: {
 		flex: 2,
+	},
+	content: {
+		backgroundColor: '#f21170',
 	},
 });
