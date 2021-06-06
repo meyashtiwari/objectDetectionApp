@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Button } from 'react-native-paper';
+import { Text, Button, Title } from 'react-native-paper';
+import { Modal, Portal, Provider } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
-import ml from '@react-native-firebase/ml';
+import MLModule from '../MLKit/MLModule';
 
 export default function MainScreen() {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [camera, setCamera] = useState(null);
 	const [labels, setLabels] = useState([]);
+	const [visible, setVisible] = React.useState(false);
+
 	const type = Camera.Constants.Type.back;
 	const isFocused = useIsFocused();
 
@@ -22,12 +25,14 @@ export default function MainScreen() {
 	const takePicture = async () => {
 		if (camera) {
 			const data = await camera.takePictureAsync(null);
-			const label = await ml().cloudImageLabelerProcessImage(data.uri, {
-				confidenceThreshold: 0.8,
-			});
-			setLabels(label);
+			const result = await MLModule.imageAnalyzer(data.uri);
+			setLabels(result);
+			showModal();
 		}
 	};
+
+	const showModal = () => setVisible(true);
+	const hideModal = () => setVisible(false);
 
 	if (hasPermission === null) {
 		return <View />;
@@ -41,6 +46,8 @@ export default function MainScreen() {
 			<View style={styles.cameraContainer}>
 				{isFocused && (
 					<Camera
+						useCamera2Api="true"
+						autoFocus="true"
 						ref={(ref) => setCamera(ref)}
 						style={styles.fixedRatio}
 						type={type}
@@ -58,14 +65,13 @@ export default function MainScreen() {
 					Detect Object
 				</Button>
 			</View>
-			<View>
-				{/* {labels.map((item, i) => (
-					<View style={{ marginTop: 20, width: 300 }} key={i}>
-						<Text>Label: {item.text}</Text>
-						<Text>Confidence: {item.confidence}</Text>
-					</View>
-				))} */}
-			</View>
+			<Provider>
+				<Portal>
+					<Modal visible={visible} onDismiss={hideModal} contentContainerStyle={styles.containerStyle}>
+						<Title style={styles.text}>{labels}</Title>
+					</Modal>
+				</Portal>
+			</Provider>
 		</View>
 	);
 }
@@ -75,7 +81,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	cameraContainer: {
-		flex: 2,
+		flex: 4,
 		justifyContent: 'center',
 		alignItems: 'center',
 		flexDirection: 'row',
@@ -85,10 +91,20 @@ const styles = StyleSheet.create({
 		aspectRatio: 1,
 	},
 	buttonContainer: {
-		flex: 1,
+		flex: 0.5,
 		backgroundColor: 'transparent',
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
+		paddingTop: '10%',
+	},
+	containerStyle: {
+		backgroundColor: 'white',
+		padding: 20,
+		alignItems: 'center',
+	},
+	text: {
+		color: 'black',
+		fontWeight: "700",
 	},
 });

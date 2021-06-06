@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paragraph, List, Divider } from 'react-native-paper';
+import { Paragraph, List } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import AppBar from '../components/AppBar';
 
